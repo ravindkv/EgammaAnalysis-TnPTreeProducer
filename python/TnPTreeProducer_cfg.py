@@ -20,16 +20,16 @@ def registerOption(optionName, defaultValue, description, optionType=VarParsing.
 registerOption('isMC',        False,    'Use MC instead of data')
 registerOption('isAOD',       False,    'Use AOD samples instead of miniAOD')
 registerOption('is80X',       False,    'Compatibility to run on old 80X files')
-registerOption('doEleID',     True,     'Include tree for electron ID SF')
-registerOption('doPhoID',     True,     'Include tree for photon ID SF')
-registerOption('doTrigger',   True,     'Include tree for trigger SF')
+registerOption('doEleID',     False,     'Include tree for electron ID SF')
+registerOption('doPhoID',     False,     'Include tree for photon ID SF')
+registerOption('doTrigger',   False,     'Include tree for trigger SF')
 registerOption('doRECO',      False,    'Include tree for Reco SF (requires AOD)')
 registerOption('calibEn',     False,    'Use EGM smearer to calibrate photon and electron energy')
 registerOption('includeSUSY', False,    'Add also the variables used by SUSY')
 
 registerOption('HLTname',     'HLT',    'HLT process name (default HLT)', optionType=VarParsing.varType.string) # HLTname was HLT2 in now outdated reHLT samples
 registerOption('GT',          'auto',   'Global Tag to be used', optionType=VarParsing.varType.string)
-registerOption('era',         '2018',   'Data-taking era: 2016, 2017, 2018, UL2017 or UL2018', optionType=VarParsing.varType.string)
+registerOption('era',         '2018',   'Data-taking era: 2016, 2017, 2018, 2022, 2023, UL2017 or UL2018', optionType=VarParsing.varType.string)
 registerOption('logLevel',    'INFO',   'Loglevel: could be DEBUG, INFO, WARNING, ERROR', optionType=VarParsing.varType.string)
 
 registerOption('L1Threshold',  0,       'Threshold for L1 matched objects', optionType=VarParsing.varType.int)
@@ -47,10 +47,10 @@ if varOptions.isAOD and varOptions.doTrigger:  log.warning('AOD is not supported
 if not varOptions.isAOD and varOptions.doRECO: log.warning('miniAOD is not supported for doRECO, please consider using AOD')
 
 from EgammaAnalysis.TnPTreeProducer.cmssw_version import isReleaseAbove
-if varOptions.era not in ['2016', '2017', '2018', 'UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']: 
+if varOptions.era not in ['2016', '2017', '2018', '2022', '2023', 'UL2016preVFP', 'UL2016postVFP', 'UL2017', 'UL2018']: 
   log.error('%s is not a valid era' % varOptions.era)
-if ('UL' in varOptions.era)!=(isReleaseAbove(10, 6)):
-  log.error('Inconsistent release for era %s. Use CMSSW_10_6_X for UL and CMSSW_10_2_X for rereco' % varOptions.era)
+#if ('UL' in varOptions.era)!=(isReleaseAbove(10, 6)):
+  #log.error('Inconsistent release for era %s. Use CMSSW_10_6_X for UL and CMSSW_10_2_X for rereco' % varOptions.era)
 
 if varOptions.includeSUSY: log.info('Including variables for SUSY')
 if varOptions.doEleID:     log.info('Producing electron SF tree')
@@ -77,9 +77,10 @@ options['SUPERCLUSTER_COLL']    = "reducedEgamma:reducedSuperClusters" ### not u
 options['ELECTRON_CUTS']        = "ecalEnergy*sin(superClusterPosition.theta)>5.0 &&  (abs(-log(tan(superClusterPosition.theta/2)))<2.5)"
 options['SUPERCLUSTER_CUTS']    = "abs(eta)<2.5 &&  et>5.0"
 options['PHOTON_CUTS']          = "(abs(-log(tan(superCluster.position.theta/2)))<=2.5) && pt> 10"
-options['ELECTRON_TAG_CUTS']    = "(abs(-log(tan(superCluster.position.theta/2)))<=2.1) && !(1.4442<=abs(-log(tan(superClusterPosition.theta/2)))<=1.566) && pt >= 30.0"
+options['ELECTRON_TAG_CUTS']    = "(abs(-log(tan(superCluster.position.theta/2)))<=2.5) && !(1.4442<=abs(-log(tan(superClusterPosition.theta/2)))<=1.566) && pt >= 30.0"
 
-options['MAXEVENTS']            = cms.untracked.int32(varOptions.maxEvents)
+options['MAXEVENTS']            = cms.untracked.int32(2000)
+#options['MAXEVENTS']            = cms.untracked.int32(varOptions.maxEvents)
 options['DoTrigger']            = varOptions.doTrigger
 options['DoRECO']               = varOptions.doRECO
 options['DoEleID']              = varOptions.doEleID
@@ -91,6 +92,8 @@ options['UseCalibEn']           = varOptions.calibEn
 options['addSUSY']              = varOptions.includeSUSY and not options['useAOD']
 
 options['OUTPUT_FILE_NAME']     = "TnPTree_%s.root" % ("mc" if options['isMC'] else "data")
+
+log.info('outputfile: %s' % options['OUTPUT_FILE_NAME'])
 
 #################################################
 # Settings for global tag
@@ -104,6 +107,9 @@ if varOptions.GT == "auto":
     if options['era'] == 'UL2016postVFP': options['GLOBALTAG'] = '106X_mcRun2_asymptotic_v15'
     if options['era'] == 'UL2017': options['GLOBALTAG'] = '106X_dataRun2_v28'
     if options['era'] == 'UL2018': options['GLOBALTAG'] = '106X_dataRun2_v28'
+    #if options['era'] == '2022': options['GLOBALTAG'] = '123X_mcRun3_2021_realistic_v15'
+    if options['era'] == '2022': options['GLOBALTAG'] = 'auto:phase1_2022_realistic' #update GT for 2022 from PDMV
+    if options['era'] == '2023': options['GLOBALTAG'] = 'auto:phase1_2023_realistic' #update GT for 2023 from PDMV
   else:
     if options['era'] == '2016':   options['GLOBALTAG'] = '94X_dataRun2_v10'
     if options['era'] == '2017':   options['GLOBALTAG'] = '94X_dataRun2_v11'
@@ -112,12 +118,33 @@ if varOptions.GT == "auto":
     if options['era'] == 'UL2016postVFP': options['GLOBALTAG'] = '106X_dataRun2_v32'
     if options['era'] == 'UL2017': options['GLOBALTAG'] = '106X_mc2017_realistic_v7'
     if options['era'] == 'UL2018': options['GLOBALTAG'] = '106X_upgrade2018_realistic_v11_L1v1'
+    #if options['era'] == '2022': options['GLOBALTAG'] = '123X_dataRun3_Prompt_v12'
+    if options['era'] == '2022': options['GLOBALTAG'] = '124X_dataRun3_Prompt_v10' #update GT for 2022 from PDMV
+    if options['era'] == '2023': options['GLOBALTAG'] = '130X_dataRun3_Prompt_v4' #update GT for 2023 from PDMV
 else:
   options['GLOBALTAG'] = varOptions.GT
+
+log.info('Globaltag: %s' % options['GLOBALTAG'])
 
 #################################################
 # Settings for trigger tag and probe measurement
 #################################################
+#Filters used in different paths
+#HLT_Ele30_WPTight_Gsf_v3
+ele30_allFilters = {'passHLTEG30L1SingleEGOrEtFilter': cms.vstring('hltEG30L1SingleEGOrEtFilter'), 'passHLTEle30WPTightClusterShapeFilter': cms.vstring('hltEle30WPTightClusterShapeFilter'), 'passHLTEle30WPTightHEFilter': cms.vstring('hltEle30WPTightHEFilter'), 'passHLTEle30WPTightEcalIsoFilter': cms.vstring('hltEle30WPTightEcalIsoFilter'), 'passHLTEle30WPTightHcalIsoFilter': cms.vstring('hltEle30WPTightHcalIsoFilter'), 'passHLTEle30WPTightPixelMatchFilter': cms.vstring('hltEle30WPTightPixelMatchFilter'), 'passHLTEle30WPTightPMS2Filter': cms.vstring('hltEle30WPTightPMS2Filter'), 'passHLTEle30WPTightGsfOneOEMinusOneOPFilter': cms.vstring('hltEle30WPTightGsfOneOEMinusOneOPFilter'), 'passHLTEle30WPTightGsfMissingHitsFilter': cms.vstring('hltEle30WPTightGsfMissingHitsFilter'), 'passHLTEle30WPTightGsfDetaFilter': cms.vstring('hltEle30WPTightGsfDetaFilter'), 'passHLTEle30WPTightGsfDphiFilter': cms.vstring('hltEle30WPTightGsfDphiFilter'), 'passHLTEle30WPTightGsfTrackIsoFilter': cms.vstring('hltEle30WPTightGsfTrackIsoFilter')}
+
+#HLT_Ele115_CaloIdVT_GsfTrkIdT_v17
+ele115_allFilters = {'passHLTEGL1SingleEGNonIsoOrWithJetAndTauFilter': cms.vstring('hltEGL1SingleEGNonIsoOrWithJetAndTauFilter'), 'passHLTEG115EtFilter': cms.vstring('hltEG115EtFilter'), 'passHLTEG115CaloIdVTClusterShapeFilter': cms.vstring('hltEG115CaloIdVTClusterShapeFilter'), 'passHLTEG115CaloIdVTHEFilter': cms.vstring('hltEG115CaloIdVTHEFilter'), 'passHLTEle115CaloIdVTPixelMatchFilter': cms.vstring('hltEle115CaloIdVTPixelMatchFilter'), 'passHLTEle115CaloIdVTGsfTrkIdTGsfDetaFilter': cms.vstring('hltEle115CaloIdVTGsfTrkIdTGsfDetaFilter'), 'passHLTEle115CaloIdVTGsfTrkIdTGsfDphiFilter': cms.vstring('hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter')}
+
+#HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL
+ele23ele12_allFilters = {'passHLTEGL1SingleAndDoubleEGOrPairFilter': cms.vstring('hltEGL1SingleAndDoubleEGOrPairFilter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLEtLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLEtLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLEtLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLEtLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLClusterShapeLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLHELeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLHELeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLHELeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLHELeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLEcalIsoLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLHcalIsoLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLPixelMatchLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLOneOEMinusOneOPLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLDetaLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLDphiLeg2Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter'), 'passHLTEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter': cms.vstring('hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter')}
+
+#HLT_DoubleEle33_CaloIdL_MW_v20
+doubleEle33_leg1_allFilters = {'passHLTEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter': cms.vstring('hltEGL1SingleAndDoubleEGNonIsoOrWithEG26WithJetAndTauFilter'), 'passHLTEG33EtFilter': cms.vstring('hltEG33EtFilter'), 'passHLTEG33HEFilter': cms.vstring('hltEG33HEFilter'), 'passHLTEG33CaloIdLClusterShapeFilter': cms.vstring('hltEG33CaloIdLClusterShapeFilter'), 'passHLTEle33CaloIdLPixelMatchFilter': cms.vstring('hltEle33CaloIdLPixelMatchFilter')}
+#HLT_DoubleEle33_CaloIdL_MW_v20
+doubleEle33_leg2_allFilters = {'passHLTDiEG33EtUnseededFilter': cms.vstring('hltDiEG33EtUnseededFilter'), 'passHLTDiEG33HEUnseededFilter': cms.vstring('hltDiEG33HEUnseededFilter'), 'passHLTDiEG33CaloIdLClusterShapeUnseededFilter': cms.vstring('hltDiEG33CaloIdLClusterShapeUnseededFilter'), 'passHLTDiEle33CaloIdLPixelMatchUnseededFilter': cms.vstring('hltDiEle33CaloIdLPixelMatchUnseededFilter')}
+
+
 if '2016' in options['era']:
   options['TnPPATHS']           = cms.vstring("HLT_Ele27_eta2p1_WPTight_Gsf_v*")
   options['TnPHLTTagFilters']   = cms.vstring("hltEle27erWPTightGsfTrackIsoFilter")
@@ -152,6 +179,43 @@ elif '2018'  in options['era']:
                                    "passHltDoubleEle33CaloIdLMWUnsLeg" :                cms.vstring("hltDiEle33CaloIdLMWPMS2UnseededFilter"),
                                   }
 
+elif '2022'  in options['era']:
+  options['TnPPATHS']           = cms.vstring("HLT_Ele32_WPTight_Gsf_v*")
+  options['TnPHLTTagFilters']   = cms.vstring("hltEle30WPTightGsfTrackIsoFilter")
+  options['TnPHLTProbeFilters'] = cms.vstring()
+  options['HLTFILTERSTOMEASURE']= {"passHltEle32WPTightGsf" :                           cms.vstring("hltEle32WPTightGsfTrackIsoFilter"),
+                                   "passHltEle115CaloIdVTGsfTrkIdTGsf" :                cms.vstring("hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter"),
+                                   "passHltEle23Ele12CaloIdLTrackIdLIsoVLLeg1L1match" : cms.vstring("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter"),
+                                   "passHltEle23Ele12CaloIdLTrackIdLIsoVLLeg2" :        cms.vstring("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter"),
+                                   "passHltDoubleEle33CaloIdLMWSeedLegL1match" :        cms.vstring("hltEle33CaloIdLMWPMS2Filter"),
+                                   "passHltDoubleEle33CaloIdLMWUnsLeg" :                cms.vstring("hltDiEle33CaloIdLMWPMS2UnseededFilter"),
+                                  }
+ 
+  options['HLTFILTERSTOMEASURE'].update({"passHltEle30WPTightGsf" : cms.vstring("hltEle30WPTightGsfTrackIsoFilter")}) 
+  options['HLTFILTERSTOMEASURE'].update(ele30_allFilters) 
+  options['HLTFILTERSTOMEASURE'].update(ele115_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(ele23ele12_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(doubleEle33_leg1_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(doubleEle33_leg2_allFilters)
+
+elif '2023'  in options['era']:
+  options['TnPPATHS']           = cms.vstring("HLT_Ele32_WPTight_Gsf_v*")
+  options['TnPHLTTagFilters']   = cms.vstring("hltEle30WPTightGsfTrackIsoFilter")
+  options['TnPHLTProbeFilters'] = cms.vstring()
+  options['HLTFILTERSTOMEASURE']= {"passHltEle32WPTightGsf" :                           cms.vstring("hltEle32WPTightGsfTrackIsoFilter"),
+                                   "passHltEle115CaloIdVTGsfTrkIdTGsf" :                cms.vstring("hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter"),
+                                   "passHltEle23Ele12CaloIdLTrackIdLIsoVLLeg1L1match" : cms.vstring("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter"),
+                                   "passHltEle23Ele12CaloIdLTrackIdLIsoVLLeg2" :        cms.vstring("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter"),
+                                   "passHltDoubleEle33CaloIdLMWSeedLegL1match" :        cms.vstring("hltEle33CaloIdLMWPMS2Filter"),
+                                   "passHltDoubleEle33CaloIdLMWUnsLeg" :                cms.vstring("hltDiEle33CaloIdLMWPMS2UnseededFilter"),
+                                  }
+  options['HLTFILTERSTOMEASURE'].update({"passHltEle30WPTightGsf" : cms.vstring("hltEle30WPTightGsfTrackIsoFilter")}) 
+  options['HLTFILTERSTOMEASURE'].update(ele30_allFilters) 
+  options['HLTFILTERSTOMEASURE'].update(ele115_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(ele23ele12_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(doubleEle33_leg1_allFilters)
+  options['HLTFILTERSTOMEASURE'].update(doubleEle33_leg2_allFilters)
+
 # Apply L1 matching (using L1Threshold) when flag contains "L1match" in name
 options['ApplyL1Matching']      = any(['L1match' in flag for flag in options['HLTFILTERSTOMEASURE'].keys()])
 options['L1Threshold']          = varOptions.L1Threshold
@@ -165,14 +229,14 @@ exec(importTestFiles)
 
 options['INPUT_FILE_NAME'] = inputs['mc' if options['isMC'] else 'data']
 
-
 ###################################################################
 ## Standard imports, GT and pile-up
 ###################################################################
 process = cms.Process("tnpEGM")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff') #old
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff') #new
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.Services_cff')
@@ -332,13 +396,17 @@ if options['DEBUG']:
 
 process.evtCounter = cms.EDAnalyzer('SimpleEventCounter')
 
+#https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/l1trig_cff.py#L139C29-L155
+process.load('L1Trigger.Skimmer.l1Filter_cfi')
+process.l1Filter.algorithms = cms.vstring('L1_SingleEG15', 'L1_SingleEG20')
 process.p = cms.Path(
         process.evtCounter        +
         process.hltFilter         +
         process.cand_sequence     +
         process.tnpPairs_sequence +
         process.mc_sequence       +
-        process.tree_sequence
+        process.tree_sequence      
+        #process.l1Filter          
         )
 
 process.TFileService = cms.Service(
