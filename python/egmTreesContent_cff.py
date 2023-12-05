@@ -31,6 +31,7 @@ EleProbeVariablesToStore = cms.PSet(
     el_pf_pt  = cms.InputTag("eleVarHelper:pfPt"),
     el_et     = cms.string("et"),
     el_e      = cms.string("energy"),
+    el_m      = cms.string("mass"),
     el_q      = cms.string("charge"),
     el_isGap  = cms.string("isGap"),
     
@@ -212,6 +213,7 @@ TagVariablesToStore = cms.PSet(
     Ele_pt     = cms.string("pt"),
     Ele_et     = cms.string("et"),
     Ele_e      = cms.string("energy"),
+    Ele_m      = cms.string("mass"),
     Ele_q      = cms.string("charge"),
     Ele_3charge = cms.string("chargeInfo().isGsfCtfScPixConsistent"),
 

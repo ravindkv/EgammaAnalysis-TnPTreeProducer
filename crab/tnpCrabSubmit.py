@@ -4,10 +4,10 @@ import os
 #
 # Example script to submit TnPTreeProducer to crab
 #
-submitVersion = "2023-02-01" # add some date here
+submitVersion = "2023-11-28" # add some date here
 doL1matching  = False
 
-defaultArgs   = ['doEleID=True','doPhoID=True','doTrigger=False']
+defaultArgs   = ['doEleID=False','doPhoID=False','doTrigger=True']
 mainOutputDir = '/store/group/phys_egamma/tnpTuples/%s/%s' % (os.environ['USER'], submitVersion)
 
 # Logging the current version of TnpTreeProducer here, such that you can find back what the actual code looked like when you were submitting
@@ -50,6 +50,7 @@ def getLumiMask(era):
   elif era=='UL2017': return 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions17/13TeV/Legacy_2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'
   elif era=='UL2018': return 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/PromptReco/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt'
   elif era=='2022': return 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json'
+  elif era=='2023': return 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions23/Cert_Collisions2023_366442_370790_Golden.json'
 
 
 #
@@ -59,6 +60,11 @@ from CRABAPI.RawCommand import crabCommand
 from CRABClient.ClientExceptions import ClientException
 from http.client import HTTPException
 
+crab_sub = open("crab_sub.sh", "w")
+crab_status = open("crab_status.sh", "w")
+crab_resub = open("crab_resub.sh", "w")
+crab_merge = open("crab_merge.sh", "w")
+path = "/eos/cms/store/group/phys_egamma/tnpTuples/rverma/"
 def submit(config, requestName, sample, era, json, extraParam=[]):
   isMC                        = 'SIM' in sample
   config.General.requestName  = '%s_%s' % (era, requestName)
@@ -66,14 +72,21 @@ def submit(config, requestName, sample, era, json, extraParam=[]):
   config.Data.outLFNDirBase   = '%s/%s/%s/' % (mainOutputDir, era, 'mc' if isMC else 'data')
   config.Data.splitting       = 'FileBased' if isMC else 'LumiBased'
   config.Data.lumiMask        = None if isMC else json
-  config.Data.unitsPerJob     = 5 if isMC else 25
+  config.Data.unitsPerJob     = 5 if isMC else 20
   config.JobType.pyCfgParams  = defaultArgs + ['isMC=True' if isMC else 'isMC=False', 'era=%s' % era] + extraParam
-
-  print( config )
+  outF = open('crab_submit_%s.py'%requestName, 'w')
+  #outF.write(config)
+  print( config, file=outF)
+  outF.close()
+  crab_sub.write("crab submit crab_submit_%s.py\n"%requestName)
+  crab_status.write("crab status -d crab_%s/crab_%s_%s\n"%(submitVersion, era, requestName))
+  crab_resub.write("crab resubmit -d crab_%s/crab_%s_%s\n"%(submitVersion, era, requestName))
+  haddIn = "%s/%s/%s/data/%s/crab_%s_%s/*/*/*.root"%(path, submitVersion, era, sample.split("/")[1], era, requestName)
+  haddOut = "%s/%s/%s/data_%s_%s.root"%(path, submitVersion, era, sample.split("/")[1], requestName)
+  crab_merge.write('hadd -f %s %s \n\n'%(haddOut, haddIn))
   #try:                           crabCommand('submit', config = config)
   #except HTTPException as hte:   print( "Failed submitting task: %s" % (hte.headers))
   #except ClientException as cle: print( "Failed submitting task: %s" % (cle))
-  print()
   print()
 
 #
@@ -105,16 +118,31 @@ from EgammaAnalysis.TnPTreeProducer.cmssw_version import isReleaseAbove
 
 if isReleaseAbove(12,4):
   era       = '2022'
-  submitWrapper('Run2022A', 'EGamma/Run2022A-PromptReco-v1/MINIAOD', era)
-  submitWrapper('Run2022B', 'EGamma/Run2022B-PromptReco-v1/MINIAOD', era)
-  submitWrapper('Run2022C', 'EGamma/Run2022C-PromptReco-v1/MINIAOD', era)
-  submitWrapper('Run2022D', 'EGamma/Run2022D-PromptReco-v3/MINIAOD', era)
-  submitWrapper('Run2022E', 'EGamma/Run2022E-PromptReco-v1/MINIAOD', era)
-  submitWrapper('Run2022F', 'EGamma/Run2022F-PromptReco-v1/MINIAOD', era)
-  submitWrapper('Run2022G', 'EGamma/Run2022G-PromptReco-v1/MINIAOD', era)
-
+  submitWrapper('Run2022C',     '/EGamma/Run2022C-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2022Dv1',   '/EGamma/Run2022D-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2022Dv2',   '/EGamma/Run2022D-PromptReco-v2/MINIAOD', era)
+  submitWrapper('Run2022E',     '/EGamma/Run2022E-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2022F',     '/EGamma/Run2022F-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2022G',     '/EGamma/Run2022G-PromptReco-v1/MINIAOD', era)
+  era       = '2023'
+  submitWrapper('Run2023B0',   '/EGamma0/Run2023B-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023B1',   '/EGamma1/Run2023B-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023C0v1', '/EGamma0/Run2023C-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023C1v1', '/EGamma1/Run2023C-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023C0v2', '/EGamma0/Run2023C-PromptReco-v2/MINIAOD', era)
+  submitWrapper('Run2023C1v2', '/EGamma1/Run2023C-PromptReco-v2/MINIAOD', era)
+  submitWrapper('Run2023C0v3', '/EGamma0/Run2023C-PromptReco-v3/MINIAOD', era)
+  submitWrapper('Run2023C1v3', '/EGamma1/Run2023C-PromptReco-v3/MINIAOD', era)
+  submitWrapper('Run2023C0v4', '/EGamma0/Run2023C-PromptReco-v4/MINIAOD', era)
+  submitWrapper('Run2023C1v4', '/EGamma1/Run2023C-PromptReco-v4/MINIAOD', era)
+  submitWrapper('Run2023D0v1', '/EGamma0/Run2023D-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023D1v1', '/EGamma1/Run2023D-PromptReco-v1/MINIAOD', era)
+  submitWrapper('Run2023D0v2', '/EGamma0/Run2023D-PromptReco-v2/MINIAOD', era)
+  submitWrapper('Run2023D1v2', '/EGamma1/Run2023D-PromptReco-v2/MINIAOD', era)
+  '''
   submitWrapper('DY_LO', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22MiniAODv3-forPOG_124X_mcRun3_2022_realistic_v12-v4/MINIAODSIM', era)
   submitWrapper('DY_LO_postEE', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EEMiniAODv3-forPOG_124X_mcRun3_2022_realistic_postEE_v1-v3/MINIAODSIM', era)
+  '''
 
 '''
 if isReleaseAbove(10,6):
