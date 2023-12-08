@@ -4,7 +4,7 @@ import os
 #
 # Example script to submit TnPTreeProducer to crab
 #
-submitVersion = "2023-11-28" # add some date here
+submitVersion = "2023-12-05" # add some date here
 doL1matching  = False
 
 defaultArgs   = ['doEleID=False','doPhoID=False','doTrigger=True']
@@ -78,12 +78,12 @@ def submit(config, requestName, sample, era, json, extraParam=[]):
   #outF.write(config)
   print( config, file=outF)
   outF.close()
-  crab_sub.write("crab submit crab_submit_%s.py\n"%requestName)
-  crab_status.write("crab status -d crab_%s/crab_%s_%s\n"%(submitVersion, era, requestName))
-  crab_resub.write("crab resubmit -d crab_%s/crab_%s_%s\n"%(submitVersion, era, requestName))
+  crab_sub.write("crab submit crab_submit_%s.py &\n"%requestName)
+  crab_status.write("crab status -d crab_%s/crab_%s_%s &\n"%(submitVersion, era, requestName))
+  crab_resub.write("crab resubmit -d crab_%s/crab_%s_%s &\n"%(submitVersion, era, requestName))
   haddIn = "%s/%s/%s/data/%s/crab_%s_%s/*/*/*.root"%(path, submitVersion, era, sample.split("/")[1], era, requestName)
   haddOut = "%s/%s/%s/data_%s_%s.root"%(path, submitVersion, era, sample.split("/")[1], requestName)
-  crab_merge.write('hadd -f %s %s \n\n'%(haddOut, haddIn))
+  crab_merge.write('hadd -f %s %s & \n\n'%(haddOut, haddIn))
   #try:                           crabCommand('submit', config = config)
   #except HTTPException as hte:   print( "Failed submitting task: %s" % (hte.headers))
   #except ClientException as cle: print( "Failed submitting task: %s" % (cle))
