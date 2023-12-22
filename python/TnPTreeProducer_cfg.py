@@ -283,7 +283,7 @@ if not options['useAOD']:
 ###################################################################
 ## Init and Load
 ###################################################################
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 process.MessageLogger.cerr.threshold = ''
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -406,9 +406,6 @@ if options['DEBUG']:
 
 process.evtCounter = cms.EDAnalyzer('SimpleEventCounter')
 
-#https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/l1trig_cff.py#L139C29-L155
-process.load('L1Trigger.Skimmer.l1Filter_cfi')
-process.l1Filter.algorithms = cms.vstring('L1_SingleEG15', 'L1_SingleEG20')
 process.p = cms.Path(
         process.evtCounter        +
         process.hltFilter         +
@@ -416,7 +413,6 @@ process.p = cms.Path(
         process.tnpPairs_sequence +
         process.mc_sequence       +
         process.tree_sequence      
-        #process.l1Filter          
         )
 
 process.TFileService = cms.Service(

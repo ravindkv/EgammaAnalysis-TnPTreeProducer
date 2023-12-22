@@ -124,6 +124,11 @@ if isReleaseAbove(12,4):
   submitWrapper('Run2022E',     '/EGamma/Run2022E-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2022F',     '/EGamma/Run2022F-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2022G',     '/EGamma/Run2022G-PromptReco-v1/MINIAOD', era)
+  submitWrapper('DY_LO_preEE', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22MiniAODv4-forPOG_130X_mcRun3_2022_realistic_v5-v2/MINIAODSIM',  era), 
+  submitWrapper('DY_LO_postEE', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EEMiniAODv4-forPOG_130X_mcRun3_2022_realistic_postEE_v6-v2/MINIAODSIM', era)
+  submitWrapper('DY_NLO_preEE', '/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22MiniAODv4-130X_mcRun3_2022_realistic_v5-v2/MINIAODSIM', era) 
+  submitWrapper('DY_NLO_postEE', '/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer22EEMiniAODv4-130X_mcRun3_2022_realistic_postEE_v6-v2/MINIAODSIM', era)
+
   era       = '2023'
   submitWrapper('Run2023B0',   '/EGamma0/Run2023B-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2023B1',   '/EGamma1/Run2023B-PromptReco-v1/MINIAOD', era)

@@ -62,7 +62,9 @@ def setGoodParticlesMiniAOD(process, options):
         import EgammaAnalysis.TnPTreeProducer.electronsExtrasSUSY_cff  as eleSusyID
         eleSusyID.addSusyIDs( process, options )
         options['ELECTRON_COLL']        = "slimmedElectronsWithUserData"
-
+    proc = "RECO"
+    if options['isMC']:
+        proc = "PAT"
     process.eleVarHelper = cms.EDProducer("PatElectronVariableHelper",
                                           probes           = cms.InputTag(options['ELECTRON_COLL']),
                                           l1EGColl         = cms.InputTag('caloStage2Digis:EGamma'),
@@ -70,8 +72,8 @@ def setGoodParticlesMiniAOD(process, options):
                                           beamSpot         = cms.InputTag("offlineBeamSpot"),
                                           conversions      = cms.InputTag("reducedEgamma:reducedConversions"),
                                           pfCandidates     = cms.InputTag("packedPFCandidates"),
-                                          ebRecHits        = cms.InputTag("reducedEgamma","reducedEBRecHits","RECO"),
-                                          eeRecHits        = cms.InputTag("reducedEgamma","reducedEERecHits","RECO")
+                                          ebRecHits        = cms.InputTag("reducedEgamma","reducedEBRecHits",proc),
+                                          eeRecHits        = cms.InputTag("reducedEgamma","reducedEERecHits",proc)
                                           )
 
     ####################  Electron collection
