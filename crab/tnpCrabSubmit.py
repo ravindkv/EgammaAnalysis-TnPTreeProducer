@@ -4,7 +4,7 @@ import os
 #
 # Example script to submit TnPTreeProducer to crab
 #
-submitVersion = "2023-12-05" # add some date here
+submitVersion = "2024-01-19" # add some date here
 doL1matching  = False
 
 defaultArgs   = ['doEleID=False','doPhoID=False','doTrigger=True']
@@ -118,6 +118,10 @@ from EgammaAnalysis.TnPTreeProducer.cmssw_version import isReleaseAbove
 
 if isReleaseAbove(12,4):
   era       = '2022'
+  submitWrapper('Run2022C',     '/EGamma/Run2022C-27Jun2023-v1/MINIAOD', era)
+  submitWrapper('Run2022D',     '/EGamma/Run2022D-27Jun2023-v2/MINIAOD', era)
+  submitWrapper('Run2022E',     '/EGamma/Run2022E-27Jun2023-v1/MINIAOD', era)
+  '''
   submitWrapper('Run2022C',     '/EGamma/Run2022C-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2022Dv1',   '/EGamma/Run2022D-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2022Dv2',   '/EGamma/Run2022D-PromptReco-v2/MINIAOD', era)
@@ -144,7 +148,6 @@ if isReleaseAbove(12,4):
   submitWrapper('Run2023D1v1', '/EGamma1/Run2023D-PromptReco-v1/MINIAOD', era)
   submitWrapper('Run2023D0v2', '/EGamma0/Run2023D-PromptReco-v2/MINIAOD', era)
   submitWrapper('Run2023D1v2', '/EGamma1/Run2023D-PromptReco-v2/MINIAOD', era)
-  '''
   submitWrapper('DY_LO', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22MiniAODv3-forPOG_124X_mcRun3_2022_realistic_v12-v4/MINIAODSIM', era)
   submitWrapper('DY_LO_postEE', '/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/Run3Summer22EEMiniAODv3-forPOG_124X_mcRun3_2022_realistic_postEE_v1-v3/MINIAODSIM', era)
   '''
