@@ -1,3 +1,4 @@
+##cp el_TOP23_BDTG.weights.xml el_TOP24_BDTG.weights.xml
 # Lepton mva xml files
 This data directory contains the xml files for leptonMva trainings.
 These are not to be confused with the electron mva. The leptonMva takes

@@ -8,18 +8,27 @@ filesMiniAOD_2018 = {
 }
 
 filesMiniAOD_2022 = {
-        'mc' :   cms.untracked.vstring('file:/afs/cern.ch/work/r/rverma/public/cms-egamma-hlt/bpix/CMSSW_13_0_9/src/step3_inMINIAOD.root'),
-        #'mc' :   cms.untracked.vstring('/store/mc/Run3Summer22MiniAODv4/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/MINIAODSIM/forPOG_130X_mcRun3_2022_realistic_v5-v2/2520000/08252cf5-7cda-4c6d-b358-0db4779efc6f.root'),
-        #'mc' :   cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/mc/Run3Summer22EEMiniAODv4/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/MINIAODSIM/130X_mcRun3_2022_realistic_postEE_v5-v2/30000/cd74865c-6cc3-43ea-822b-8eb77afcf206.root'),
-        #'mc' :   cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/mc/Run3Summer22MiniAODv3/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/MINIAODSIM/forPOG_124X_mcRun3_2022_realistic_v12-v4/80000/0541aeac-f25d-4fd0-84f6-275ecf1cf160.root'),
-    #'data' : cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/data/Run2022B/EGamma/MINIAOD/PromptReco-v1/000/355/558/00000/92629520-53fb-4f1d-8465-a15b5504e149.root'),
-    'data' :   cms.untracked.vstring('file:/afs/cern.ch/work/r/rverma/public/cms-egamma-hlt/bpix/CMSSW_13_0_9/src/step3_inMINIAOD.root'),
+    'data' : cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/data/Run2022C/EGamma/MINIAOD/27Jun2023-v1/2530000/5907ab2b-e68f-474c-80aa-e5057c23cf7b.root'),
+    #'data' :   cms.untracked.vstring('file:/afs/cern.ch/work/r/rverma/public/cms-egamma-hlt/bpix/CMSSW_13_0_9/src/step3_inMINIAOD.root'),
+}
+filesMiniAOD_2022preEE = {
+    'mc' : cms.untracked.vstring('/store/mc/Run3Summer22MiniAODv4/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/MINIAODSIM/forPOG_130X_mcRun3_2022_realistic_v5-v2/60000/b577d7c0-f980-4534-822b-2da67e1424d2.root')
+}
+filesMiniAOD_2022postEE = {
+    'mc' : cms.untracked.vstring('/store/mc/Run3Summer22EEMiniAODv4/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8/MINIAODSIM/forPOG_130X_mcRun3_2022_realistic_postEE_v6-v2/30000/02e5dc07-abcd-43ca-a273-cbe4b6b53a73.root')
 }
 
 filesMiniAOD_2023 = {
-    'mc' :   cms.untracked.vstring(''),
-    #'data' : cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2023D/EGamma0/MINIAOD/PromptReco-v2/000/370/776/00000/2744e097-88da-4e48-9740-d0bfe1d54fce.root'),
-    'data' :   cms.untracked.vstring('file:/afs/cern.ch/work/r/rverma/public/cms-egamma-hlt/bpix/CMSSW_13_0_9/src/step3_inMINIAOD.root'),
+    'data' : cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2023D/EGamma0/MINIAOD/PromptReco-v2/000/370/776/00000/2744e097-88da-4e48-9740-d0bfe1d54fce.root'),
+}
+filesMiniAOD_2023preBPIX = {
+    'mc' : cms.untracked.vstring('/store/mc/Run3Summer23MiniAODv4/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/MINIAODSIM/130X_mcRun3_2023_realistic_v14-v1/70002/1e07f519-3a32-4eda-85f2-2da221f43e7f.root')
+}
+filesMiniAOD_2023postBPIX = {
+    'mc' : cms.untracked.vstring('/store/mc/Run3Summer23BPixMiniAODv4/DYto2L-4Jets_MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia8/MINIAODSIM/130X_mcRun3_2023_realistic_postBPix_v2-v3/50001/9ffc5afa-1d8c-4370-a9dd-5464a372770b.root')
+}
+filesMiniAOD_2024 = {
+    'mc' : cms.untracked.vstring('/store/mc/Run3Winter24MiniAOD/DYto2L_M-50_TuneCP5_13p6TeV_pythia8/MINIAODSIM/KeepSi_133X_mcRun3_2024_realistic_v8-v2/2560000/7c936ae9-2ac8-409c-b7ac-3e9f7b05ddae.root')
 }
 
 filesMiniAOD_2017 = {
