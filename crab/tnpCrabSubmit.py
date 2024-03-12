@@ -4,7 +4,7 @@ import os
 #
 # Example script to submit TnPTreeProducer to crab
 #
-submitVersion = "2024-03-01" # add some date here
+submitVersion = "2024-03-12" # add some date here
 doL1matching  = False
 
 defaultArgs   = ['doEleID=False','doPhoID=False','doTrigger=True']
@@ -162,8 +162,8 @@ if isReleaseAbove(12,4):
   submitWrapper('DY_NLO_postBPIX', '/DYto2L-2Jets_MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8/Run3Summer23BPixMiniAODv4-130X_mcRun3_2023_realistic_postBPix_v2-v3/MINIAODSIM', eraMCpostBPIX)
 
   era       = '2024'
-  submitWrapper('DY_LO', '/DYto2L_M-50_TuneCP5_13p6TeV_pythia8/Run3Winter24MiniAOD-KeepSi_133X_mcRun3_2024_realistic_v8-v2/MINIAODSIM', era)
-  submitWrapper('DYMLL_LO', '/DYTo2L_MLL-50_TuneCP5_13p6TeV_pythia8/Run3Winter24MiniAOD-KeepSi_133X_mcRun3_2024_realistic_v8-v2/MINIAODSIM', era)
+  submitWrapper('DY_LO', '/DYTo2L_MLL-50_TuneCP5_13p6TeV_pythia8/Run3Winter24MiniAOD-KeepSi_133X_mcRun3_2024_realistic_v8-v2/MINIAODSIM', era)
+  submitWrapper('DY_LO_2', '/DYto2L_M-50_TuneCP5_13p6TeV_pythia8/Run3Winter24MiniAOD-KeepSi_133X_mcRun3_2024_realistic_v8-v2/MINIAODSIM', era)
 
 '''
 if isReleaseAbove(10,6):
